@@ -55,7 +55,7 @@ const onRequest = (request, response) => {
   console.log("parsedUrl=", parseURL);
   console.log("pathname=", pathname);
 
-  if(pathname == "/"){
+  if(pathname == "/random-joke"){
       response.writeHead(200, { 'Content-Type': 'text/html'}); //send response headers
       response.write(getRandomJokeJSON(jokes.length)); //send content
       response.end(); //close conection
