@@ -28,10 +28,14 @@ const onRequest = (request, response) => {
   const paramas = query.parse(parseURL.query);
   const { limit } = paramas;
 
+  // get the contents of request.headers then split into array of strings
+  let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
+  acceptedTypes = acceptedTypes || [];
+
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit);
+    urlStruct[pathname](request, response, limit, acceptedTypes);
   } else if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit);
+    urlStruct[pathname](request, response, limit, acceptedTypes);
   } else {
     urlStruct.notFound(request, response);
   }
