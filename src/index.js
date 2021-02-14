@@ -14,6 +14,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
   '/random-joke': jsonHandler.getRandomJokeResponse,
+  '/random-jokes': jsonHandler.getRandomJokeResponse,
   notFound: htmlHandler.get404Response,
 };
 
@@ -28,6 +29,8 @@ const onRequest = (request, response) => {
   const { limit } = paramas;
 
   if (urlStruct[pathname]) {
+    urlStruct[pathname](request, response, limit);
+  } else if (urlStruct[pathname]) {
     urlStruct[pathname](request, response, limit);
   } else {
     urlStruct.notFound(request, response);
