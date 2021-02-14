@@ -1,4 +1,6 @@
 // array of jokes
+const _ = require('underscore');
+
 const jokes = [
   { q: 'What do you call a very small valentine?', a: 'A valen-tiny! >:)' },
   { q: 'What did the dog say when he rubbed his tail on the sandpaper?', a: 'Ruff, Ruff! >:)' },
@@ -14,16 +16,29 @@ const jokes = [
 
 // function to get jokes
 const getRandomJokeJSON = (numberOfJokes) => {
-  // first get a random number between 1 and the number of jokes in the array
-  const number = Math.floor(Math.random() * 10); // return a random number from 0 to 9.
+  // first make sure that the number of jokes is a number we can actually use
+  let limit = Number(numberOfJokes); // cast 'limit' to a Number
+  limit = !limit ? 1 : limit; // if limit is not a number because it is the "falsy" NAN default to 1
+  limit = limit < 1 ? 1 : limit; // if limit is less than 1 default it to 1
+  limit = limit > jokes.length ? jokes.length : limit; // make limit length
 
-  // return the joke
-  return JSON.stringify(jokes[number]);
+  // next shuffel the jokes in the array and sav to new array
+  const jokes2 = _.shuffle(jokes);
+
+  const jokes3 = []; // new array to reutrn
+
+  // loop through and add the jokes to the array that will be returned
+  for (let i = 0; i < limit; i++) {
+    jokes3[i] = jokes2[i];
+  }
+
+  // return the array as JSON
+  return JSON.stringify(jokes3);
 };
 
-const getRandomJokeResponse = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/html' }); // send response headers
-  response.write(getRandomJokeJSON(jokes.length)); // send content
+const getRandomJokeResponse = (request, response, params = 1) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // send response headers
+  response.write(getRandomJokeJSON(params)); // send content
   response.end(); // close conection
 };
 

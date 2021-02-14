@@ -1,6 +1,7 @@
 // console.log("First web service starting up ...");
 const http = require('http');
 const url = require('url');
+const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
@@ -23,11 +24,11 @@ const onRequest = (request, response) => {
   // console.log(request.headers);
   const parseURL = url.parse(request.url);
   const { pathname } = parseURL;
-  console.log('parsedUrl=', parseURL);
-  console.log('pathname=', pathname);
+  const paramas = query.parse(parseURL.query);
+  const { limit } = paramas;
 
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response);
+    urlStruct[pathname](request, response, limit);
   } else {
     urlStruct.notFound(request, response);
   }
