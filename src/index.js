@@ -15,6 +15,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const urlStruct = {
   '/random-joke': jsonHandler.getRandomJokeResponse,
   '/random-jokes': jsonHandler.getRandomJokeResponse,
+  '/default-styles': htmlHandler.getCSS,
   notFound: htmlHandler.get404Response,
 };
 
@@ -27,15 +28,18 @@ const onRequest = (request, response) => {
   const { pathname } = parseURL;
   const paramas = query.parse(parseURL.query);
   const { limit } = paramas;
+  const httpMethod = request.method;
 
   // get the contents of request.headers then split into array of strings
   let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
   acceptedTypes = acceptedTypes || [];
 
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit, acceptedTypes);
+    urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
   } else if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit, acceptedTypes);
+    urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
+  } else if (urlStruct[pathname]) {
+    urlStruct[pathname](request, response);
   } else {
     urlStruct.notFound(request, response);
   }

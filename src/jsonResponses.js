@@ -59,11 +59,25 @@ const getRandomJokeXML = (numberOfJokes) => {
   return `<jokes>${jokes3}</jokes>`;
 };
 
-const getRandomJokeResponse = (request, response, params = 1, acceptedTypes = 'application/json') => {
+// Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
+// Refactored to an arrow function by ACJ
+const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
+
+const getRandomJokeResponse = (request, response, params = 1, acceptedTypes = 'application/json', httpMethod) => {
   // check to see that "text/xml" is in the acceptedTypes
   if (acceptedTypes.includes('text/xml')) {
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.write(getRandomJokeXML(params));
+    if (httpMethod === 'HEAD') {
+      const bytes = getBinarySize(getRandomJokeXML(params));
+      response.writeHead(200, { 'Content-Type': 'text/xml', 'Content-Length': bytes });
+      response.end();
+    } else {
+      response.writeHead(200, { 'Content-Type': 'text/xml' });
+      response.write(getRandomJokeXML(params));
+      response.end();
+    }
+  } else if (httpMethod === 'HEAD') {
+    const bytes = getBinarySize(getRandomJokeJSON(params));
+    response.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': bytes });
     response.end();
   } else {
     response.writeHead(200, { 'Content-Type': 'application/json' }); // send response headers
