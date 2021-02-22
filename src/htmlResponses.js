@@ -10,7 +10,7 @@ const get404Response = (request, response) => {
 };
 
 const getCSS = (request, response) => {
-  response.writeHead(404, { 'Content-Type': 'text/css' }); // send response headers
+  response.writeHead(200, { 'Content-Type': 'text/css' }); // send response headers
   response.write(CSS); // send content
   response.end(); // close connection
 };
