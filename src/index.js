@@ -16,6 +16,7 @@ const urlStruct = {
   '/random-joke': jsonHandler.getRandomJokeResponse,
   '/random-jokes': jsonHandler.getRandomJokeResponse,
   '/default-styles.css': htmlHandler.getCSS,
+  '/joke-client.html': htmlHandler.getJokes,
   notFound: htmlHandler.get404Response,
 };
 
@@ -36,10 +37,6 @@ const onRequest = (request, response) => {
 
   if (urlStruct[pathname]) {
     urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
-  } else if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
-  } else if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response);
   } else {
     urlStruct.notFound(request, response);
   }
