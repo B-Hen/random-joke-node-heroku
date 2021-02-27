@@ -15,9 +15,34 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const urlStruct = {
   '/random-joke': jsonHandler.getRandomJokeResponse,
   '/random-jokes': jsonHandler.getRandomJokeResponse,
+  '/getBudget': jsonHandler.getBudget,
   '/default-styles.css': htmlHandler.getCSS,
   '/joke-client.html': htmlHandler.getJokes,
   notFound: htmlHandler.get404Response,
+};
+
+const handlePost = (request, response, parsedUrl) => {
+  if (parsedUrl.pathname === '/addBudget') {
+    const body = [];
+    
+    // https://nodejs.org/api/http.html
+    request.on('error', (err) => {
+      console.dir(error);
+      response.statusCode = 400;
+      response.end();
+    });
+    
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    
+    request.on('end', () => {
+      const bodyString = Buffer.concat(body).toString();
+      const bodyParams = query.parse(bodyString);
+      
+      jsonHandler.addBudget(request, response, bodyParams);
+    });
+  }
 };
 
 // 7 - this is the function that will be called every time a client request comes in
@@ -31,14 +56,19 @@ const onRequest = (request, response) => {
   const { limit } = paramas;
   const httpMethod = request.method;
 
-  // get the contents of request.headers then split into array of strings
-  let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
-  acceptedTypes = acceptedTypes || [];
-
-  if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
+  // post request
+  if (httpMethod === 'POST') {
+    handlePost(request, response, parseURL);
   } else {
-    urlStruct.notFound(request, response);
+    // get the contents of request.headers then split into array of strings
+    let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
+    acceptedTypes = acceptedTypes || [];
+
+    if (urlStruct[pathname]) {
+      urlStruct[pathname](request, response, limit, acceptedTypes, httpMethod);
+    } else {
+      urlStruct.notFound(request, response);
+    }
   }
 };
 

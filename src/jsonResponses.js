@@ -2,16 +2,25 @@
 const _ = require('underscore');
 
 const jokes = [
-  { q: 'What do you call a very small valentine?', a: 'A valen-tiny! >:)' },
-  { q: 'What did the dog say when he rubbed his tail on the sandpaper?', a: 'Ruff, Ruff! >:)' },
-  { q: "Why don't sharks like to eat clowns?", a: 'Because they taste funny! >:)' },
-  { q: 'What did the boy cat say to the girl cat?', a: "You're Purr-fect! >:)" },
-  { q: "What is a frog's favorite outdoor sport?", a: 'Fly Fishing! >:)' },
-  { q: 'I hate jokes about German sausages.', a: 'Theyre the wurst. >:)' },
-  { q: 'Did you hear about the cheese factory that exploded in France?', a: 'There was nothing left but de Brie. >:)' },
-  { q: 'Our wedding was so beautiful ', a: 'Even the cake was in tiers. >:)' },
-  { q: 'Is this pool safe for diving?', a: 'It deep ends. >:)' },
-  { q: 'Dad, can you put my shoes on?', a: 'I dont think theyll fit me. >:)' },
+  { budget: '100' },
+  {
+    item: 'Monster Mango Juice Case', cost: '6.99', type: 'Food/Drink', necessary: 'No',
+  },
+  {
+    item: 'banana', cost: '0.99', type: 'Food/Drink', necessary: 'No',
+  },
+  {
+    item: 'Jujutsu Kasien Vol. 8', cost: '8.99', type: 'Book', necessary: 'No',
+  },
+  {
+    item: 'Case of Water', cost: '25.99', type: 'Food/Drink', necessary: 'Yes',
+  },
+  {
+    item: 'Rice', cost: '6.99', type: 'Food/Drink', necessary: 'Yes',
+  },
+  {
+    item: 'Dish Soap', cost: '3.65', type: 'Cleaning Supply', necessary: 'yes',
+  },
 ];
 
 // function to get jokes for JSON
@@ -23,13 +32,13 @@ const getRandomJokeJSON = (numberOfJokes) => {
   limit = limit > jokes.length ? jokes.length : limit; // make limit length
 
   // next shuffel the jokes in the array and sav to new array
-  const jokes2 = _.shuffle(jokes);
+  // const jokes2 = _.shuffle(jokes);
 
   const jokes3 = []; // new array to reutrn
 
   // loop through and add the jokes to the array that will be returned
   for (let i = 0; i < limit; i++) {
-    jokes3[i] = jokes2[i];
+    jokes3[i] = jokes[i];
   }
 
   // return the array as JSON
@@ -86,4 +95,62 @@ const getRandomJokeResponse = (request, response, params = 1, acceptedTypes = 'a
   }
 };
 
-module.exports.getRandomJokeResponse = getRandomJokeResponse;
+const budget = {};
+
+const respondJSON = (request, response, status, object) => {
+  response.writeHead(status, { 'Content-Type': 'application/json' });
+  response.write(JSON.stringify(object));
+  response.end();
+};
+
+const respondJSONMeta = (request, response, status) => {
+  response.writeHead(status, { 'Content-Type': 'application/json' });
+  response.end();
+};
+
+//method to get the current budget
+const getBudget = (request, response) => {
+  const responseJSON = {
+    budget,
+  };
+
+  respondJSON(request, response, 200, jokes[0]);
+};
+
+//method to add a budget
+const addBudget = (request, response, body) => {
+  const responseJSON = {
+    message: 'Budget is required',
+  };
+
+  //if parameter was passed in return error message
+  if(!body.budget)
+  {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+   // we DID get a budget
+   let responseCode = 201; // "created"
+   if (jokes[0].budget != body.budget) { //if the budget is not the same change status code to update
+     responseCode = 204;
+   } else {
+     jokes[0] = {budget: ""}; // make a new budget
+   }
+ 
+   // update or initialize values, as the case may be
+   jokes[0] = {budget: body.budget}
+ 
+   if (responseCode === 201) {
+     responseJSON.message = 'Created Successfully';
+     return respondJSON(request, response, responseCode, responseJSON);
+   }
+ 
+   return respondJSONMeta(request, response, responseCode); // this is for 204, a "no content" header
+}
+
+module.exports = {
+  getRandomJokeResponse,
+  getBudget,
+  addBudget,
+}
