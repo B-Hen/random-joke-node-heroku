@@ -24,22 +24,22 @@ const urlStruct = {
 const handlePost = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/addBudget') {
     const body = [];
-    
+
     // https://nodejs.org/api/http.html
     request.on('error', (err) => {
-      console.dir(error);
+      console.dir(err);
       response.statusCode = 400;
       response.end();
     });
-    
+
     request.on('data', (chunk) => {
       body.push(chunk);
     });
-    
+
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
-      
+
       jsonHandler.addBudget(request, response, bodyParams);
     });
   }

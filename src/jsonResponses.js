@@ -108,7 +108,7 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
-//method to get the current budget
+// method to get the current budget
 const getBudget = (request, response) => {
   const responseJSON = {
     budget,
@@ -117,40 +117,39 @@ const getBudget = (request, response) => {
   respondJSON(request, response, 200, jokes[0]);
 };
 
-//method to add a budget
+// method to add a budget
 const addBudget = (request, response, body) => {
   const responseJSON = {
     message: 'Budget is required',
   };
 
-  //if parameter was passed in return error message
-  if(!body.budget)
-  {
+  // if parameter was passed in return error message
+  if (!body.budget) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-   // we DID get a budget
-   let responseCode = 201; // "created"
-   if (jokes[0].budget != body.budget) { //if the budget is not the same change status code to update
-     responseCode = 204;
-   } else {
-     jokes[0] = {budget: ""}; // make a new budget
-   }
- 
-   // update or initialize values, as the case may be
-   jokes[0] = {budget: body.budget}
- 
-   if (responseCode === 201) {
-     responseJSON.message = 'Created Successfully';
-     return respondJSON(request, response, responseCode, responseJSON);
-   }
- 
-   return respondJSONMeta(request, response, responseCode); // this is for 204, a "no content" header
-}
+  // we DID get a budget
+  let responseCode = 201; // "created"
+  if (jokes[0].budget !== body.budget) { // update
+    responseCode = 204;
+  } else {
+    jokes[0] = { budget: '' }; // make a new budget
+  }
+
+  // update or initialize values, as the case may be
+  jokes[0] = { budget: body.budget };
+
+  if (responseCode === 201) {
+    responseJSON.message = 'Created Successfully';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+
+  return respondJSONMeta(request, response, responseCode); // this is for 204, a "no content" header
+};
 
 module.exports = {
   getRandomJokeResponse,
   getBudget,
   addBudget,
-}
+};
